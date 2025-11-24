@@ -1,6 +1,4 @@
-# 🔒 Deadlock Detection and Recovery System
-
-A comprehensive implementation of deadlock detection and recovery algorithms for operating systems, featuring Banker's Algorithm, Wait-For Graph analysis, and thread-based deadlock simulation with recovery mechanisms.
+# 🔒 Deadlock Detection and Recovery Tool
 
 ## 📋 Table of Contents
 
