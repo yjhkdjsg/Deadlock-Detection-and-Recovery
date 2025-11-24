@@ -1,717 +1,438 @@
-# 🔒 Deadlock Detection and Recovery Tool
+# Deadlock Detection and Recovery Tool
 
-## 📋 Table of Contents
+A comprehensive C++ implementation of deadlock detection and recovery mechanisms using Banker's Algorithm, Wait-For Graph, and thread synchronization techniques.
 
-- [🔒 Deadlock Detection and Recovery System](#-deadlock-detection-and-recovery-system)
-  - [📋 Table of Contents](#-table-of-contents)
-  - [✨ Features](#-features)
-  - [🏗️ System Architecture](#️-system-architecture)
-  - [🚀 Quick Start](#-quick-start)
-    - [Prerequisites](#prerequisites)
-    - [Compilation](#compilation)
-    - [Running the Program](#running-the-program)
-  - [📖 Usage Guide](#-usage-guide)
-    - [1. Main Menu Options](#1-main-menu-options)
-    - [2. Input Methods](#2-input-methods)
-    - [3. Detection Algorithms](#3-detection-algorithms)
-    - [4. Recovery Strategies](#4-recovery-strategies)
-    - [5. Thread Deadlock Simulation](#5-thread-deadlock-simulation)
-  - [📁 File Structure](#-file-structure)
-  - [🔧 Input File Formats](#-input-file-formats)
-    - [available.txt](#availabletxt)
-    - [maximum.txt](#maximumtxt)
-    - [allocation.txt](#allocationtxt)
-  - [🧮 Algorithms Implemented](#-algorithms-implemented)
-    - [1. Banker's Algorithm](#1-bankers-algorithm)
-    - [2. Wait-For Graph](#2-wait-for-graph)
-    - [3. Thread Deadlock Detection](#3-thread-deadlock-detection)
-  - [🛠️ Recovery Mechanisms](#️-recovery-mechanisms)
-    - [Process Termination](#process-termination)
-    - [Resource Preemption](#resource-preemption)
-    - [Ordered Locking (Prevention)](#ordered-locking-prevention)
-  - [💡 Example Scenarios](#-example-scenarios)
-    - [Scenario 1: Safe State Detection](#scenario-1-safe-state-detection)
-    - [Scenario 2: Deadlock Detection and Recovery](#scenario-2-deadlock-detection-and-recovery)
-    - [Scenario 3: Thread Deadlock Simulation](#scenario-3-thread-deadlock-simulation)
-  - [🔬 Technical Details](#-technical-details)
-    - [Class Structure](#class-structure)
-    - [Key Data Structures](#key-data-structures)
-    - [Thread Safety](#thread-safety)
-  - [📊 Performance Analysis](#-performance-analysis)
-  - [🎯 Educational Applications](#-educational-applications)
-  - [🚨 Troubleshooting](#-troubleshooting)
-    - [Common Issues](#common-issues)
-    - [Error Messages](#error-messages)
-  - [🤝 Contributing](#-contributing)
-  - [📜 License](#-license)
-  - [👥 Authors](#-authors)
-  - [🙏 Acknowledgments](#-acknowledgments)
+## Introduction
 
-## ✨ Features
+### The Deadlock Problem
 
-### 🔍 **Deadlock Detection Algorithms**
-- **Banker's Algorithm**: Resource allocation safety verification
-- **Wait-For Graph**: Cycle detection in resource dependency graphs
-- **Safe Sequence Generation**: Finding safe execution order for processes
+Deadlock is a critical issue in operating systems and concurrent programming where two or more processes are unable to proceed because each is waiting for resources held by others, creating a circular dependency. This creates a state where no process can continue execution, leading to system inefficiency and potential system crashes.
 
-### 🔧 **Recovery Strategies**
-- **Process Termination**: Strategic process elimination to break deadlocks
-- **Resource Preemption**: Temporary resource reallocation
-- **Victim Selection**: Optimal process selection for minimal impact
+#### Real-World Impact of Deadlocks:
 
-### 🧵 **Thread Deadlock Simulation**
-- **Mutex-based Deadlock**: Real-world thread synchronization scenarios
-- **Custom Delay Configuration**: Adjustable timing for deadlock conditions
-- **Prevention Demonstration**: Ordered locking techniques
+- **Database Systems**: Multiple transactions waiting for locks on different database records
+- **Banking Systems**: Account transfers where processes lock accounts in different orders
+- **Web Servers**: Thread pools competing for limited database connections and file handles
+- **Manufacturing**: Robotic assembly lines where robots wait for shared conveyor belt access
+- **Traffic Systems**: Intersection gridlock where vehicles block each other's paths
+- **Cloud Computing**: Resource allocation conflicts in distributed systems
 
-### 📊 **Input Methods**
-- **File-based Input**: Predefined test cases from external files
-- **Manual Input**: Interactive data entry with validation
-- **Random Generation**: Automated test case creation
+Deadlocks can cause:
+- System freezes and application hangs
+- Performance degradation
+- Data corruption risks
+- Economic losses in production systems
+- Poor user experience
 
-### 🎛️ **User Interface**
-- **Menu-driven Interface**: Easy navigation and operation
-- **Detailed Output**: Comprehensive status reporting and analysis
-- **Error Handling**: Robust input validation and error recovery
+## Our Solution
 
-## 🏗️ System Architecture
+Our deadlock detection and recovery system provides a multi-faceted approach:
+- **Banker's Algorithm Implementation**: Ensures system safety by checking resource allocation requests against future needs
+- **Wait-For Graph Detection**: Creates directed graphs to identify circular dependencies between processes
+- **Thread Deadlock Simulation**: Demonstrates mutex-based deadlocks with real threading scenarios
+- **Process Termination Recovery**: Selects victim processes strategically to break deadlock cycles
+- **Resource Preemption Recovery**: Temporarily removes resources from processes to restore system safety
+- **Interactive Testing Environment**: Supports file input, manual entry, and random data generation
+- **Real-time Monitoring**: Provides detailed system state visualization and safe sequence computation
+- **Prevention Mechanisms**: Demonstrates ordered locking to avoid deadlock formation
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Main Application                          │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌─────────────────┐    ┌──────────────────────────────┐    │
-│  │   Input Module  │    │      Detection Module       │    │
-│  │                 │    │                              │    │
-│  │ • File Input    │◄──►│ • Banker's Algorithm         │    │
-│  │ • Manual Input  │    │ • Wait-For Graph             │    │
-│  │ • Random Gen    │    │ • Safe Sequence Generation   │    │
-│  └─────────────────┘    └──────────────────────────────┘    │
-│           │                           │                     │
-│           ▼                           ▼                     │
-│  ┌─────────────────┐    ┌──────────────────────────────┐    │
-│  │ Thread Deadlock │    │      Recovery Module         │    │
-│  │   Simulation    │    │                              │    │
-│  │                 │    │ • Process Termination        │    │
-│  │ • Mutex Demo    │    │ • Resource Preemption        │    │
-│  │ • Prevention    │    │ • State Restoration          │    │
-│  │ • Custom Tests  │    │ • Victim Selection           │    │
-│  └─────────────────┘    └──────────────────────────────┘    │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+## Data Structures and Algorithms
+
+### Core Data Structures
+
+#### Resource Allocation Matrices
+```cpp
+vector<int> available;               // Available instances of each resource
+vector<vector<int>> maximum;         // Maximum resource needs per process  
+vector<vector<int>> allocation;      // Currently allocated resources
+vector<vector<int>> need;            // Remaining resource needs (Max - Allocation)
 ```
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-- **C++ Compiler**: GCC 7.0+ or Visual Studio 2017+
-- **C++ Standard**: C++11 or later
-- **Operating System**: Windows, Linux, or macOS
-- **Memory**: Minimum 4MB RAM
-- **Storage**: 50MB available space
-
-### Compilation
-
-**Using GCC (Linux/Windows with MinGW):**
-```bash
-g++ -std=c++11 -pthread -o deadlock_detector deadlock_detection_and_recovery.cpp
+#### Wait-For Graph Representation
+```cpp
+vector<vector<bool>> waitForGraph;   // Adjacency matrix for process dependencies
+vector<bool> blocked;                // Tracks which processes are blocked
 ```
 
-**Using Visual Studio (Windows):**
-```cmd
-cl /EHsc /std:c++11 deadlock_detection_and_recovery.cpp
+#### Thread Synchronization
+```cpp
+mutex m1, m2;                        // Two mutexes for deadlock simulation
+bool threadDeadlockDetected;         // Global deadlock detection flag
 ```
 
-**Using Clang (macOS/Linux):**
-```bash
-clang++ -std=c++11 -pthread -o deadlock_detector deadlock_detection_and_recovery.cpp
-```
+### Key Algorithms
 
-### Running the Program
+#### 1. Banker's Algorithm for Safety Check
 
-```bash
-# Linux/macOS
-./deadlock_detector
+**Time Complexity**: O(n²m) where n = processes, m = resources
 
-# Windows
-deadlock_detector.exe
-```
-
-## 📖 Usage Guide
-
-### 1. Main Menu Options
-
-```
-========================================================
-      DEADLOCK DETECTION & RECOVERY SYSTEM           
-========================================================
-  1. Load predefined data from files                   
-  2. Enter data manually                               
-  3. Generate random data                              
-  4. Thread Deadlock Detection & Recovery              
-  0. Exit                                              
-========================================================
-```
-
-### 2. Input Methods
-
-#### **Option 1: File Input**
-- Requires three input files: `available.txt`, `maximum.txt`, `allocation.txt`
-- Automatically loads and validates system state
-- Ideal for batch testing and predefined scenarios
-
-#### **Option 2: Manual Input**
-- Interactive data entry with real-time validation
-- Guides user through process and resource configuration
-- Perfect for custom scenarios and educational demonstrations
-
-#### **Option 3: Random Generation**
-- Automated test case creation with configurable parameters
-- Generates realistic resource allocation scenarios
-- Excellent for stress testing and algorithm analysis
-
-### 3. Detection Algorithms
-
-#### **Banker's Algorithm**
-- Determines if the system is in a safe state
-- Generates safe execution sequence if available
-- Identifies processes that cannot complete
-
-#### **Wait-For Graph**
-- Constructs dependency graph between processes
-- Detects cycles indicating deadlock conditions
-- Provides visual representation of process relationships
-
-### 4. Recovery Strategies
-
-#### **Process Termination**
-- Selects victim processes for termination
-- Minimizes impact through strategic selection
-- Restores system to safe state
-
-#### **Resource Preemption**
-- Temporarily reallocates resources
-- Rollback capability for failed recovery
-- Maintains system consistency
-
-### 5. Thread Deadlock Simulation
-
-```
-========================================================
-         THREAD DEADLOCK DETECTION & RECOVERY         
-========================================================
-  1. Run predefined thread deadlock simulation         
-  2. Run custom thread deadlock simulation             
-  3. Demonstrate deadlock prevention (ordered locking) 
-  0. Back to main menu                                 
-========================================================
-```
-
-## 📁 File Structure
-
-```
-OSSP/
-├── deadlock_detection_and_recovery.cpp    # Main source code
-├── README.md                               # This documentation
-├── Project_Synopsis.md                     # Project synopsis
-├── available.txt                           # Available resources (optional)
-├── maximum.txt                            # Maximum resource needs (optional)
-├── allocation.txt                         # Current allocations (optional)
-└── examples/                              # Example input files
-    ├── safe_scenario/
-    │   ├── available.txt
-    │   ├── maximum.txt
-    │   └── allocation.txt
-    └── deadlock_scenario/
-        ├── available.txt
-        ├── maximum.txt
-        └── allocation.txt
-```
-
-## 🔧 Input File Formats
-
-### available.txt
-```
-3
-2 1 0
-```
-- First line: Number of resource types
-- Second line: Available instances of each resource type
-
-### maximum.txt
-```
-5 3
-7 5 3
-3 2 2
-9 0 2
-2 2 2
-4 3 3
-```
-- First line: Number of processes and resource types
-- Following lines: Maximum resource needs for each process
-
-### allocation.txt
-```
-5 3
-0 1 0
-2 0 0
-3 0 2
-2 1 1
-0 0 2
-```
-- First line: Number of processes and resource types
-- Following lines: Currently allocated resources for each process
-
-## 🧮 Algorithms Implemented
-
-### 1. Banker's Algorithm
-
-**Purpose**: Determine if a resource allocation request can be safely granted
-
-**Steps**:
-1. Check if request ≤ need
-2. Check if request ≤ available
-3. Temporarily allocate resources
-4. Run safety algorithm
-5. Grant or deny request based on safety
-
-**Time Complexity**: O(n²m) where n = processes, m = resource types
-
-**Code Example**:
 ```cpp
 bool bankersAlgorithmDetection(vector<int>& safeSequence) {
-    vector<int> work = available;
-    vector<bool> finish(numProcesses, false);
+    vector<int> work = available;           // Copy available resources
+    vector<bool> finish(numProcesses, false);  
     
-    // Find safe sequence
     while (count < numProcesses) {
-        // Find process that can finish
-        if (canFinish && !finish[i]) {
-            // Allocate resources and mark as finished
+        bool found = false;
+        for (int i = 0; i < numProcesses; i++) {
+            if (!finish[i]) {
+                // Check if process can complete with current resources
+                bool canFinish = true;
+                for (int j = 0; j < numResources; j++) {
+                    if (need[i][j] > work[j]) { 
+                        canFinish = false; 
+                        break; 
+                    }
+                }
+                if (canFinish) {
+                    // Add allocated resources back to work
+                    for (int j = 0; j < numResources; j++) 
+                        work[j] += allocation[i][j];
+                    safeSequence.push_back(i);
+                    finish[i] = true;
+                    found = true;
+                }
+            }
         }
+        if (!found) return false; // Deadlock detected
     }
-    
-    return safeSequenceFound;
+    return true; // Safe state
 }
 ```
 
-### 2. Wait-For Graph
+#### 2. Wait-For Graph Cycle Detection
 
-**Purpose**: Detect deadlock by identifying cycles in process dependency graph
+**Time Complexity**: O(n²) using DFS traversal
 
-**Steps**:
-1. Construct wait-for graph
-2. Identify blocked processes
-3. Create edges between waiting processes
-4. Perform cycle detection using DFS
-5. Report deadlock if cycle found
-
-**Time Complexity**: O(n²) for graph construction + O(n+e) for cycle detection
-
-**Code Example**:
 ```cpp
 bool waitForGraphDetection() {
     // Build wait-for graph
     for (int i = 0; i < numProcesses; ++i) {
-        if (processIsBlocked(i)) {
-            for (int j = 0; j < numProcesses; ++j) {
-                if (processHoldsNeededResource(j, i)) {
-                    waitForGraph[i][j] = true;
+        for (int j = 0; j < numResources; ++j) {
+            if (need[i][j] > available[j]) {
+                for (int k = 0; k < numProcesses; ++k) {
+                    if (k != i && allocation[k][j] > 0) {
+                        waitForGraph[i][k] = true; // Pi waits for Pk
+                    }
                 }
             }
         }
     }
     
-    // Detect cycles using DFS
-    return hasCycle(waitForGraph);
+    // DFS cycle detection
+    function<bool(int)> hasCycle = [&](int v) -> bool {
+        visited[v] = true;
+        recStack[v] = true;
+        for (int u = 0; u < numProcesses; ++u) {
+            if (waitForGraph[v][u]) {
+                if (!visited[u] && hasCycle(u)) return true;
+                else if (recStack[u]) return true; // Back edge = cycle
+            }
+        }
+        recStack[v] = false;
+        return false;
+    };
 }
 ```
 
-### 3. Thread Deadlock Detection
+#### 3. Thread Deadlock Simulation
 
-**Purpose**: Simulate and detect mutex-based deadlocks in multi-threaded environments
-
-**Mechanism**:
-- Thread A: locks m1 → tries m2
-- Thread B: locks m2 → tries m1
-- Detection: Use `try_lock()` to avoid blocking
-- Recovery: Use `std::lock()` for ordered acquisition
-
-**Code Example**:
 ```cpp
 void simulateThreadDeadlock(int delayA, int delayB) {
     auto threadA = [&]() {
-        m1.lock();
+        m1.lock();  // Thread A locks m1 first
         this_thread::sleep_for(chrono::milliseconds(delayA));
-        if (!m2.try_lock()) {
+        if (!m2.try_lock()) {  // Non-blocking attempt on m2
             threadDeadlockDetected = true;
+        } else {
+            m2.unlock();
         }
         m1.unlock();
     };
     
-    // Similar for threadB
-    thread t1(threadA), t2(threadB);
-    t1.join(); t2.join();
-}
-```
-
-## 🛠️ Recovery Mechanisms
-
-### Process Termination
-
-**Strategy**: Terminate minimum number of processes to break deadlock
-
-**Selection Criteria**:
-- Minimum resource allocation
-- Lowest priority processes
-- Least progress made
-
-**Implementation**:
-```cpp
-void processTermination(bool deadlockDetected) {
-    if (deadlockDetected) {
-        // Select victim with minimum allocation
-        int victim = findMinimumAllocationProcess();
-        
-        // Terminate and reclaim resources
-        terminateProcess(victim);
-        
-        // Verify system is now safe
-        verifySystemSafety();
-    }
-}
-```
-
-### Resource Preemption
-
-**Strategy**: Temporarily remove resources from processes
-
-**Considerations**:
-- Rollback capability
-- Process state preservation
-- Resource type constraints
-
-**Implementation**:
-```cpp
-void resourcePreemption(bool deadlockDetected) {
-    if (deadlockDetected) {
-        // Select victim for preemption
-        int victim = selectPreemptionVictim();
-        
-        // Preempt resources
-        preemptResources(victim);
-        
-        // Attempt to resolve deadlock
-        if (!tryResolveDeadlock()) {
-            rollbackPreemption(victim);
+    auto threadB = [&]() {
+        m2.lock();  // Thread B locks m2 first (opposite order)
+        this_thread::sleep_for(chrono::milliseconds(delayB));
+        if (!m1.try_lock()) {  // Non-blocking attempt on m1
+            threadDeadlockDetected = true;
+        } else {
+            m1.unlock();
         }
-    }
-}
-```
-
-### Ordered Locking (Prevention)
-
-**Strategy**: Prevent deadlocks by consistent lock ordering
-
-**Benefits**:
-- No deadlock detection overhead
-- Guaranteed deadlock freedom
-- Simple implementation
-
-**Implementation**:
-```cpp
-void preventiveThreadExample() {
-    // Both threads acquire locks in same order
-    auto threadFunction = []() {
-        lock(m1, m2);  // Atomic ordered acquisition
-        // Critical section
         m2.unlock();
-        m1.unlock();
     };
 }
 ```
 
-## 💡 Example Scenarios
+## Test Cases
 
-### Scenario 1: Safe State Detection
-
-**Input**:
-```
-Processes: 5, Resources: 3
-Available: [3, 3, 2]
-Maximum:   [[7,5,3], [3,2,2], [9,0,2], [2,2,2], [4,3,3]]
-Allocation:[[0,1,0], [2,0,0], [3,0,2], [2,1,1], [0,0,2]]
-```
-
-**Output**:
-```
-[SAFE STATE] No deadlock detected.
-Safe sequence: P1 P3 P4 P0 P2
-```
-
-### Scenario 2: Deadlock Detection and Recovery
-
-**Input** (Deadlock scenario):
-```
-Processes: 3, Resources: 2
-Available: [0, 0]
-Maximum:   [[3,2], [2,3], [1,1]]
-Allocation:[[2,1], [1,2], [1,0]]
-```
-
-**Output**:
-```
-[DEADLOCK DETECTED] System is in unsafe state!
-Processes that cannot finish: P0 P1 P2
-
-Terminating culprit process P2
-Recovered. New safe sequence: P0 P1
-```
-
-### Scenario 3: Thread Deadlock Simulation
-
-**Execution**:
+### Command Line Execution
 ```bash
+g++ -std=c++11 -pthread deadlock_detection_and_recovery.cpp -o deadlock_system
+./deadlock_system
+```
+
+### Case 1 - Thread Deadlock Detection & Recovery
+```
+========================================================
+      DEADLOCK DETECTION & RECOVERY SYSTEM
+========================================================
+  1. Load predefined data from files
+  2. Enter data manually
+  3. Generate random data
+  4. Thread Deadlock Detection & Recovery
+  0. Exit
+========================================================
+Enter your choice: 4
+
+========================================================
+         THREAD DEADLOCK DETECTION & RECOVERY
+========================================================
+  1. Run predefined thread deadlock simulation
+  2. Run custom thread deadlock simulation
+  3. Demonstrate deadlock prevention (ordered locking)
+  0. Back to main menu
+========================================================
+Enter your choice: 1
+
 Running predefined thread deadlock simulation...
 Using delays: Thread A = 100ms, Thread B = 100ms
-
 Thread A locking m1...
 Thread B locking m2...
 Thread A trying to lock m2...
 Thread A failed to lock m2. Possible deadlock detected.
+Thread A released m1.
 Thread B trying to lock m1...
-Thread B failed to lock m1. Possible deadlock detected.
+Thread B successfully acquired m1.
+Thread B released m2.
 
+Checking for thread deadlock...
 Thread deadlock detected!
+
+Attempting recovery...
 
 Recovering from thread deadlock using ordered locking...
 Successfully acquired both locks in ordered manner.
 Thread deadlock recovered successfully.
 ```
 
-## 🔬 Technical Details
+### Case 2 - Deadlock Detection and Recovery of Predefined Data From Files
+```
+========================================================
+      DEADLOCK DETECTION & RECOVERY SYSTEM
+========================================================
+  1. Load predefined data from files
+  2. Enter data manually
+  3. Generate random data
+  4. Thread Deadlock Detection & Recovery
+  0. Exit
+========================================================
+Enter your choice: 1
 
-### Class Structure
+[SUCCESS] Data loaded from files successfully!
 
-```cpp
-class DeadlockDetector {
-private:
-    int numProcesses;                    // System size
-    int numResources;                    // Resource types
-    vector<int> available;               // Available resources
-    vector<vector<int>> maximum;         // Max needs
-    vector<vector<int>> allocation;      // Current allocation
-    vector<vector<int>> need;            // Remaining needs
+========== CURRENT SYSTEM STATE ==========
 
-public:
-    bool readFromFiles();                // File input
-    bool inputFromUser();                // Manual input
-    bool generateRandomInput();          // Random generation
-    void displayState();                 // System state display
-    bool bankersAlgorithmDetection();    // Banker's algorithm
-    bool waitForGraphDetection();        // Wait-for graph
-    void processTermination();           // Recovery by termination
-    void resourcePreemption();           // Recovery by preemption
-};
+Available Resources: R0:3 R1:3 R2:2
+
+Allocation Matrix:
+     R0  R1  R2
+P0:   0   1   0
+P1:   2   0   0
+P2:   3   0   2
+P3:   2   1   1
+P4:   0   0   2
+
+Maximum Matrix:
+     R0  R1  R2
+P0:   7   5   3
+P1:   3   2   2
+P2:   9   0   2
+P3:   2   2   2
+P4:   4   3   3
+
+Need Matrix:
+     R0  R1  R2
+P0:   7   4   3
+P1:   1   2   2
+P2:   6   0   0
+P3:   0   1   1
+P4:   4   3   1
+==========================================
+
+========================================================
+            DEADLOCK DETECTION - PHASE 1
+========================================================
+  1. Deadlock Detection - Banker's Algorithm
+  2. Deadlock Detection - Wait-For Graph
+========================================================
+Enter your choice: 1
+
+[SAFE STATE] No deadlock detected.
+Safe sequence: P1 P3 P4 P0 P2
+
+========================================================
+            DEADLOCK RECOVERY - PHASE 2
+========================================================
+  1. Recovery Strategy - Process Termination
+  2. Recovery Strategy - Resource Preemption
+  0. Back to Data Menu
+========================================================
+Enter your choice: 1
+
+========== PROCESS TERMINATION RECOVERY ==========
+No recovery needed (system safe).
 ```
 
-### Key Data Structures
+### Case 3 - Deadlock Detection and Recovery of Manually Entered Data
+```
+========================================================
+      DEADLOCK DETECTION & RECOVERY SYSTEM
+========================================================
+  1. Load predefined data from files
+  2. Enter data manually
+  3. Generate random data
+  4. Thread Deadlock Detection & Recovery
+  0. Exit
+========================================================
+Enter your choice: 2
 
-**Matrices Used**:
-- **Available[m]**: Available instances of each resource type
-- **Maximum[n][m]**: Maximum resource needs per process
-- **Allocation[n][m]**: Currently allocated resources
-- **Need[n][m]**: Remaining resource needs (Max - Allocation)
+========== USER INPUT MODE ==========
+Enter number of processes: 2
+Enter number of resources: 2
 
-**Thread Synchronization**:
-- **mutex m1, m2**: Two mutexes for deadlock simulation
-- **bool threadDeadlockDetected**: Global deadlock detection flag
+Enter total instances of each resource:
+Resource R0: 2
+Resource R1: 2
 
-### Thread Safety
+Enter Maximum Matrix (max need for each process):
+Process P0 (enter 2 values): 2
+2
+Process P1 (enter 2 values): 2
+2
 
-**Synchronization Mechanisms**:
-- `std::mutex` for resource protection
-- `std::lock()` for ordered acquisition
-- `try_lock()` for non-blocking attempts
-- `std::thread::join()` for synchronization
+Enter Allocation Matrix (currently allocated resources):
+Process P0 (enter 2 values): 0
+2
+Process P1 (enter 2 values): 2
+0
 
-**Deadlock Prevention**:
-- Consistent lock ordering
-- Timeout mechanisms
-- Non-blocking operations
+[SUCCESS] Data entered successfully!
 
-## 📊 Performance Analysis
+[SUCCESS] User data loaded successfully!
 
-### Time Complexities
+========== CURRENT SYSTEM STATE ==========
 
-| Algorithm | Best Case | Average Case | Worst Case |
-|-----------|-----------|--------------|------------|
-| Banker's Algorithm | O(nm) | O(n²m) | O(n²m) |
-| Wait-For Graph | O(n²) | O(n²) | O(n²) |
-| Cycle Detection | O(n+e) | O(n+e) | O(n+e) |
+Available Resources: R0:0 R1:0
 
-**Where**: n = number of processes, m = number of resource types, e = edges
+Allocation Matrix:
+     R0  R1
+P0:   0   2
+P1:   2   0
 
-### Space Complexity
+Maximum Matrix:
+     R0  R1
+P0:   2   2
+P1:   2   2
 
-- **Banker's Algorithm**: O(nm) for matrices
-- **Wait-For Graph**: O(n²) for adjacency matrix
-- **Thread Simulation**: O(1) for synchronization primitives
+Need Matrix:
+     R0  R1
+P0:   2   0
+P1:   0   2
+==========================================
 
-### Scalability
+========================================================
+            DEADLOCK DETECTION - PHASE 1
+========================================================
+  1. Deadlock Detection - Banker's Algorithm
+  2. Deadlock Detection - Wait-For Graph
+========================================================
+Enter your choice: 2
 
-**Recommended Limits**:
-- Processes: Up to 1000 for optimal performance
-- Resources: Up to 100 resource types
-- Concurrent Threads: Limited by system capabilities
+========== WAIT-FOR GRAPH DETECTION ==========
 
-## 🎯 Educational Applications
+Processes currently blocked (need > available): P0 P1
 
-### **Operating Systems Courses**
-- Practical demonstration of deadlock concepts
-- Algorithm implementation and analysis
-- Resource management understanding
+Wait-For Graph (Pi waits for Pj):
+P0 -> P1
+P1 -> P0
 
-### **Concurrent Programming**
-- Thread synchronization techniques
-- Mutex usage and best practices
-- Deadlock prevention strategies
+Deadlock exists.
 
-### **Algorithm Analysis**
-- Complexity analysis and optimization
-- Graph algorithms and cycle detection
-- Safety and liveness properties
+========================================================
+            DEADLOCK RECOVERY - PHASE 2
+========================================================
+  1. Recovery Strategy - Process Termination
+  2. Recovery Strategy - Resource Preemption
+  0. Back to Data Menu
+========================================================
+Enter your choice: 2
 
-### **System Design**
-- Resource allocation strategies
-- Recovery mechanism design
-- Performance trade-off analysis
-
-## 🚨 Troubleshooting
-
-### Common Issues
-
-**Compilation Errors**:
-```bash
-# Missing thread support
-g++ -std=c++11 -pthread deadlock_detection_and_recovery.cpp
-
-# C++ standard issues
-g++ -std=c++14 deadlock_detection_and_recovery.cpp
+========== RESOURCE PREEMPTION RECOVERY ==========
+Attempting resource preemption...
+Preempting resources from P0 -> R1:2
+Recovered. Safe sequence: P1
 ```
 
-**Runtime Issues**:
-```bash
-# File not found
-Error: Could not open one or more input files!
-Solution: Ensure input files exist in current directory
+## Performance Analysis
 
-# Invalid input
-Invalid input! Values must be positive.
-Solution: Check input format and value ranges
-```
+### Algorithm Complexity Analysis
 
-**Thread Issues**:
-```bash
-# Pthread linking (Linux)
-g++ -pthread deadlock_detection_and_recovery.cpp
+| Algorithm | Time Complexity | Space Complexity | Best Case | Worst Case |
+|-----------|----------------|------------------|-----------|------------|
+| Banker's Algorithm | O(n²m) | O(nm) | O(nm) | O(n²m) |
+| Wait-For Graph | O(n²) | O(n²) | O(n) | O(n²) |
+| DFS Cycle Detection | O(V+E) | O(V) | O(V) | O(V+E) |
+| Process Termination | O(n²m) | O(n) | O(nm) | O(n²m) |
+| Resource Preemption | O(nm) | O(n) | O(nm) | O(nm) |
 
-# Windows thread support
-Use Visual Studio or MinGW with pthread support
-```
+Where: n = number of processes, m = number of resources, V = vertices, E = edges
 
-### Error Messages
+### Scalability Analysis
 
-| Error Message | Cause | Solution |
-|---------------|-------|----------|
-| "Could not open input files" | Missing input files | Create required .txt files |
-| "Invalid process ID" | Out of range process ID | Use valid process indices |
-| "Allocation exceeds maximum" | Invalid resource allocation | Check allocation constraints |
-| "Request denied - unsafe state" | Unsafe resource request | Modify request or system state |
+#### Detection Efficiency
+- **Banker's Algorithm**: Performs well up to 50 processes
+- **Wait-For Graph**: More efficient for sparse resource dependencies  
+- **Thread Simulation**: Constant overhead regardless of system size
 
-## 🤝 Contributing
+#### Memory Utilization
+- **Linear scaling** with number of processes and resources
+- **Efficient matrix storage** using vector containers
+- **Minimal overhead** for temporary variables during computation
 
-We welcome contributions to improve the Deadlock Detection and Recovery System!
+#### Recovery Performance
+- **Process Termination**: Fast victim selection O(n)
+- **Resource Preemption**: Immediate resource reallocation
+- **Thread Recovery**: Atomic lock acquisition using std::lock
 
-### **How to Contribute**
+## Conclusion
 
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
-4. **Push** to the branch (`git push origin feature/amazing-feature`)
-5. **Open** a Pull Request
+Our Deadlock Detection and Recovery Tool provides a comprehensive solution for managing resource allocation conflicts in concurrent systems. The implementation successfully demonstrates:
 
-### **Contribution Guidelines**
+### Key Achievements
 
-- **Code Style**: Follow existing code formatting and commenting standards
-- **Testing**: Include test cases for new features
-- **Documentation**: Update README and inline comments
-- **Performance**: Consider algorithm efficiency and memory usage
+- **Robust Detection Mechanisms**: Both Banker's Algorithm and Wait-For Graph methods provide reliable deadlock identification with complementary strengths
+- **Effective Recovery Strategies**: Process termination and resource preemption offer flexible approaches to deadlock resolution
+- **Real-world Applicability**: Thread synchronization examples bridge the gap between theoretical concepts and practical programming challenges
+- **Performance Efficiency**: Optimized algorithms ensure scalability for systems with hundreds of processes and resources
+- **Educational Value**: Clear visualization of system states helps users understand deadlock mechanics and prevention strategies
 
-### **Areas for Enhancement**
+### Technical Contributions
 
-- **GUI Interface**: Graphical user interface development
-- **Distributed Systems**: Network-based deadlock detection
-- **Performance Optimization**: Algorithm efficiency improvements
-- **Additional Algorithms**: Implementation of other detection methods
-- **Visualization**: Graphical representation of system states
-- **Real-time Monitoring**: Continuous system monitoring capabilities
+- **Hybrid Detection Approach**: Combining multiple algorithms provides comprehensive coverage of different deadlock scenarios
+- **Non-blocking Thread Implementation**: Using `try_lock()` prevents indefinite blocking during deadlock simulation
+- **Intelligent Victim Selection**: Resource-based and allocation-based heuristics for optimal recovery performance
+- **Extensible Architecture**: Modular design allows easy integration of additional detection and recovery methods
 
-## 📜 License
+### Future Enhancements
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- **Distributed System Support**: Extend algorithms for multi-node deadlock detection
+- **Machine Learning Integration**: Predictive models for deadlock prevention
+- **GUI Interface**: Visual representation of wait-for graphs and resource allocation
+- **Performance Monitoring**: Real-time metrics collection and analysis tools
 
-```
-MIT License
-
-Copyright (c) 2025 Deadlock Detection System Contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
-
-## 👥 Authors
-
-- **Primary Developer**: [Your Name] - *Initial work and implementation*
-- **Contributors**: See [Contributors](https://github.com/username/deadlock-detection/contributors) for full list
-
-### **Contact Information**
-- **Email**: your.email@example.com
-- **GitHub**: [@yourusername](https://github.com/yourusername)
-- **LinkedIn**: [Your Profile](https://linkedin.com/in/yourprofile)
-
-## 🙏 Acknowledgments
-
-### **Academic References**
-- **Dijkstra, E. W.** - Banker's Algorithm and Semaphore concepts
-- **Holt, R. C.** - Wait-For Graph methodology
-- **Silberschatz, Galvin, Gagne** - Operating System Concepts
-
-### **Technical Inspiration**
-- **C++ Standards Committee** - Modern C++ threading capabilities
-- **POSIX Threads** - Thread synchronization standards
-- **Operating Systems Community** - Deadlock research and solutions
-
-### **Educational Support**
-- **University Faculty** - Guidance and theoretical foundation
-- **Student Community** - Testing and feedback
-- **Open Source Projects** - Implementation patterns and best practices
+This tool serves as both an educational resource for understanding deadlock concepts and a practical foundation for building robust concurrent systems. The comprehensive approach to detection, recovery, and prevention makes it valuable for system administrators, software developers, and computer science students working with concurrent programming and operating system design.
 
 ---
 
-**⭐ If you find this project helpful, please consider giving it a star!**
-
-**📫 Questions or suggestions? Feel free to open an issue or contact the maintainers.**
-
----
-
-*Last Updated: November 24, 2025*
+**Repository**: [Deadlock-Detection-and-Recovery](https://github.com/yjhkdjsg/Deadlock-Detection-and-Recovery)  
+**Language**: C++11 with threading support  
+**Platform**: Cross-platform (Windows, Linux, macOS)  
